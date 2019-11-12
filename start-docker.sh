@@ -4,7 +4,9 @@
 
 set -e
 
-IMAGE_NAME="mod-nightly-custom-op-ubuntu16"
+USER_ID=$(id -u)
+
+IMAGE_NAME="mod-nightly-custom-op-ubuntu16-user-$USER_ID"
 
 # create named container if arg given (--rm default)
 if [ -z $1 ]; then
@@ -24,6 +26,7 @@ fi
 
 # start bash
 docker run $CNAME --privileged -it --device=/dev/ttyACM0 \
-  --user=root -v ${PWD}:/working_dir -w /working_dir \
+  --user=$USER_ID \
+  -v ${PWD}:/working_dir -w /working_dir \
   $IMAGE_NAME \
   /bin/bash
