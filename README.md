@@ -21,9 +21,9 @@ This will produce the following folder structure
 └── zedboard-setup # Instructions on how to setup the zedboard to run TFLITE
 ```
 
-# How to run?
+## How to run the containers?
 
-Build the docker image once (~4GB in size):
+Build the docker image *once* (~4GB in size):
 
 ```
 ./build-docker.sh
@@ -35,12 +35,13 @@ Run the docker container:
 ./start-docker.sh
 ```
 
-Note that the start command uses `--rm` flag, thus your container will be deleted on exit.
+Note that the start command uses `--rm` flag, thus your container will be 
+deleted on exit. Anything modified in `/working_dir` will persist.
 
-## Docker user and root in the container
+### Docker user and root in the container
 
-The docker scripts create a user with your user id.
-Running `./build-docker.sh` and `./start-docker.sh` will put you on a container
+The docker scripts create a user called `developer`  with your user id.
+Running `./build-docker.sh` and `./start-docker.sh` will start a container
 with a user that has a matching USER ID to the user that ran the `./build-docker.sh`
 script.
 
@@ -50,6 +51,11 @@ This user has root access inside the docker container with the password:
 ## Compile and run TFLITE 
 
 ### Zedboard
+
+Considering that zedboard was setup with the instructions 
+[here](https://github.com/tflite-soc/zedboard-setup/tree/master), and it is
+accessible under `root@10.42.0.196`, the following steps should work out 
+of the box.
 
 ```
 # (host) Inside tflite-soc folder
