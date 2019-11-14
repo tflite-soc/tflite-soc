@@ -46,3 +46,49 @@ script.
 
 This user has root access inside the docker container with the password:
 `devpasswd`.
+
+## Compile and run TFLITE to the zedboard
+
+```
+# Inside tflite-soc folder
+./startdocker
+
+# Enter tensorflow root folder
+cd tensorflow
+
+# Download dependencies
+./tensorflow/lite/tools/make/download_dependencies.sh
+
+# Build the binaries
+# Stored at tflite-soc/tensorflow/tensorflow/lite/tools/make/gen/bbb_armv7l
+./tensorflow/lite/tools/make/build_bbb_lib.sh
+
+# Copy the binaries to the zedboard
+# 1. Exit the docker container for ssh/scp access
+exit
+
+# 2. Copy the cross-compiled binaries to the zedboard
+scp -r tensorflow/tensorflow/lite/tools/make/gen/bbb_armv7l/ root@10.42.0.196:~/.
+
+# 3. Copy the models to the zedboard
+scp -r tensorflow-models root@10.42.0.196:~/.
+
+# 4. Connect to the zedboard and run the prebuilt TFLITE binaires with a model
+ssh root@10.42.0.196
+cd 
+
+# List the model
+./bbb_armv7l/bin/minimal tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
+
+# Benchmark the model with 1 thread
+./bbb_armv7l/bin/benchmark_model --use_gpu=false --num_threads=1 \
+  --enable_op_profiling=true \
+  --graph=tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
+
+# Benchmark the model with 2 threads
+./bbb_armv7l/bin/benchmark_model --use_gpu=false --num_threads=2 \
+  --enable_op_profiling=true \
+  --graph=tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
+
+
+
