@@ -50,6 +50,40 @@ This user has root access inside the docker container with the password:
 
 ## Compile and run TFLITE 
 
+### x86
+
+All that it is needed is the proper docker setup.
+After compilation, binaries will be created at `tensoflow/tensorflow-bin`
+
+```
+# (host) Inside tflite-soc folder
+./startdocker
+
+# (docker) Enter tensorflow root folder
+cd tensorflow
+
+# (docker) Build the benchmarking and the minimal tools
+bazel build tensorflow/lite/tools/benchmark:benchmark_model
+bazel build tensorflow/lite/examples/minimal:minimal
+
+# (docker) List the model layers
+bazel-bin/tensorflow/lite/examples/minimal/minimal \
+    ../tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
+
+# (docker) Benchmark the model with 1 thread
+bazel-bin/tensorflow/lite/tools/benchmark/benchmark_model \
+    --use_gpu=false --num_threads=1 \
+    --enable_op_profiling=true \
+    --graph=../tensorflow-models/mobilenet_quant_v1_224.tflite
+
+# (docker) Benchmark the model with 4 threads
+bazel-bin/tensorflow/lite/tools/benchmark/benchmark_model \
+    --use_gpu=false --num_threads=4 \
+    --enable_op_profiling=true \
+    --graph=../tensorflow-models/mobilenet_quant_v1_224.tflite
+```
+
+
 ### Zedboard
 
 Considering that zedboard was setup with the instructions 
@@ -84,7 +118,7 @@ scp -r tensorflow-models root@10.42.0.196:~/.
 # 4. (host) Connect to the zedboard and run the prebuilt TFLITE binaires with a model
 ssh root@10.42.0.196
 
-# (zed) List the model
+# (zed) List the model layers
 cd 
 ./bbb_armv7l/bin/minimal tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
 
