@@ -123,12 +123,12 @@ bazel-bin/tensorflow/lite/examples/minimal/minimal \
 bazel-bin/tensorflow/lite/tools/benchmark/benchmark_model \
     --use_gpu=false --num_threads=1 \
     --enable_op_profiling=true \
-    --graph=../tensorflow-models/mobilenet_quant_v1_224.tflite
+    --graph=../tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
 
 # (docker) Benchmark the model with 4 threads
 bazel-bin/tensorflow/lite/tools/benchmark/benchmark_model \
     --use_gpu=false --num_threads=4 \
     --enable_op_profiling=true \
-    --graph=../tensorflow-models/mobilenet_quant_v1_224.tflite
+    --graph=../tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
 ```
 
