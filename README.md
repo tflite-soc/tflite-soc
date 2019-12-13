@@ -1,5 +1,8 @@
 # tflite-soc
-Holds scripts to build and start containers that can compile binaries to the zedboard's arm
+
+Holds scripts to build and start containers that can compile Tensorflow Lite
+binaries to the zedboard's arm or build system models for specific TFLite OPs
+using SystemC.
 
 ## Structure
 
@@ -23,7 +26,7 @@ This will produce the following folder structure
 
 ## How to run the containers?
 
-Build the docker image *once* (~4GB in size):
+Build the docker image **once** (~4GB in size):
 
 ```
 ./build-docker.sh
@@ -35,7 +38,7 @@ Run the docker container:
 ./start-docker.sh
 ```
 
-Note that the start command uses `--rm` flag, thus your container will be 
+Note that the `start` command uses `--rm` flag, thus your container will be 
 deleted on exit. Anything modified in `/working_dir` will persist.
 
 ### Docker user and root in the container
@@ -131,4 +134,53 @@ bazel-bin/tensorflow/lite/tools/benchmark/benchmark_model \
     --enable_op_profiling=true \
     --graph=../tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite
 ```
+
+## Compile and run TFLITE with SystemC
+
+### For a x86 platform
+
+```
+# (host) Inside tflite-soc folder
+./startdocker
+
+# (docker) Enter tensorflow root folder
+cd tensorflow
+
+# (docker) Verify that you are on the system-c branch on submodule
+git fetch origin system-c
+git checkout system-c
+
+# -- Commands to build SystemC models --
+
+# Hello World example
+bazel build --jobs 1 //tensorflow/lite/examples/systemc:hello_systemc
+bazel run //tensorflow/lite/examples/systemc:hello_systemc
+
+# Channel with producer consumer example
+bazel build --jobs 1 //tensorflow/lite/examples/systemc:hello_channel
+bazel run //tensorflow/lite/examples/systemc:hello_channel
+
+# SystemC with integrated GTest Suite for TDD
+bazel build --jobs 1 //tensorflow/lite/examples/systemc:sc_example_test
+bazel test //tensorflow/lite/examples/systemc:sc_example_test
+
+# 2D Systolic array accelerator in isolation
+bazel build --jobs 1 //tensorflow/lite/kernels/modeling:systolic_run
+bazel run //tensorflow/lite/kernels/modeling:systolic_run
+
+# 2D Systolic array accelerator with TFLite benchmarking tools
+bazel build --jobs 1 //tensorflow/lite/examples/systemc:hello_channel # SeeBugs
+bazel build //tensorflow/lite/tools/benchmark:benchmark_model --cxxopt=-DTOGGLE_TFLITE_SOC=1
+bazel-bin/tensorflow/lite/tools/benchmark/benchmark_model \
+    --use_gpu=false --num_threads=1 --enable_op_profiling=true \
+    --graph=../tensorflow-models/mobilenet-v1/mobilenet_v1_1.0_224_quant.tflite \
+    --num_runs=1
+```
+
+# Known BUGs
+
+1) SystemC dependent binaries fail to build
+  * Because of a bug in bazel's build system when executing command line
+    arguments that take too long, aka building SystemC lib, SystemC may not be
+    ready. To prevent it, compile with --jobs 1 flag
 
