@@ -184,3 +184,10 @@ bazel-bin/tensorflow/lite/tools/benchmark/benchmark_model \
     arguments that take too long, aka building SystemC lib, SystemC may not be
     ready. To prevent it, compile with --jobs 1 flag
 
+# LICENSE Note
+
+This repository is licensed under the [Apache License 2.0](LICENSE)
+
+However, this repository includes other repositories as submodules and they
+may have their own individual licenses. Please check the submodules licenses
+accordingly.

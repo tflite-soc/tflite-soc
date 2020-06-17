@@ -1,3 +1,19 @@
+# ==============================================================================
+# Copyright 2020 The TFLITE-SOC Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ==============================================================================
+
 FROM tensorflow/tensorflow:nightly-custom-op-ubuntu16
 #FROM tensorflow/tensorflow:latest-devel-py3
 
@@ -14,9 +30,13 @@ RUN apt install -y git
 RUN apt install -y vim
 RUN apt install -y tmux
 
+# Requirements for VSCODE plugins
+WORkDIR /usr/local/bin
+wget -q https://github.com/bazelbuild/buildtools/releases/download/3.2.1/buildifier -O buildifier
+
 # Tools to cross-compile for the Zedboard
 RUN apt install -y minicom
-RUN apt install -y crossbuild-essential-armhf
+RUN apt install -y crossbuild-essential-armhfA
 
 # Tools to profile x86 code 
 # RUN apt install -y perf
